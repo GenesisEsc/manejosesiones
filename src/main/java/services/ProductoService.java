@@ -2,6 +2,7 @@ package services;
 
 import models.Producto;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Interfaz ProductoServices.
@@ -18,7 +19,6 @@ import java.util.List;
  * concreta, facilitando la reutilización y mantenimiento del código.
  */
 public interface ProductoService {
-
     /**
      * Metodo que devuelve una lista de productos disponibles.
      *
@@ -30,4 +30,6 @@ public interface ProductoService {
      * clase que la utilice, como {ProductosServicesImplement}.
      */
     List<Producto> listar();
+    Optional<Producto> porId(Long id);
 }
+

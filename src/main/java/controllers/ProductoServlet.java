@@ -59,6 +59,9 @@ public class ProductoServlet extends HttpServlet {
             out.println("<head>");
             out.println("<meta charset=utf-8>");
             out.println("<title>Listado de Productos</title>");
+            if (usernameOptional.isPresent()) {
+                out.println("div style='color: blue;'>Hola" + usernameOptional.get() + "Bienvenido!</div>");
+            }
             // Vincula el archivo CSS para los estilos
             out.println("<link rel='stylesheet' href='" + req.getContextPath() + "/styles.css'>");
             out.println("</head>");
@@ -97,6 +100,11 @@ public class ProductoServlet extends HttpServlet {
                 // Solo los usuarios con sesión activa pueden ver los precios
                 if (usernameOptional.isPresent()) {
                     out.println("<td>" + p.getPrecio() + "</td>");
+                    out.println("<td><a href=\""
+                            +req.getContextPath()
+                            +"/agregar-carro?id=?"
+                            +p.getIdProducto()
+                            +"\">Agregar Producto al carro</a></td>");
                 }
                 out.println("</tr>");
             });

@@ -3,6 +3,7 @@ package services;
 import models.Producto;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Clase ProductosServicesImplement.
@@ -41,4 +42,10 @@ public class ProductoServiceImplement implements ProductoService {
                 new Producto(3L, "cocina", "cocina", 599.60)
         );
     }
+
+    @Override
+    public Optional<Producto> porId(Long id) {
+        return listar().stream().filter(p -> p.getIdProducto().equals((id))).findAny();
+    }
+
 }
