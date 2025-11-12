@@ -1,22 +1,31 @@
 package services;
+/**
+ * autor: Génesis
+ * fecha: 11/11/2025
+ * descripción:
+ * clase de implementacion de un servicio que obtiene el nombre de usuatio
+ * guardado en la sesion http y lo devuelve envuelto en un Optional<String>
+ *
+ */
 
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;//clases de las API de los servlets
+import jakarta.servlet.http.HttpSession;
 
-import java.util.Arrays;
-import java.util.Optional;
+import java.util.Optional;//Optional se usa para expresar la posible ausencia de valor de forma segura (evita null directo)
 
 public class LoginServiceSessionImplement implements LoginService {
     @Override
-    public Optional<String> getUserName(HttpServletRequest request) {
-        //hago una condicion preguntando si la cookie es distinta  de null
-        //si es verdadero obtenga la cookie caso contrario creo un nuevo objeto
-        //de la cookie
-        Cookie[] cookies = request.getCookies() != null ? request.getCookies() : new Cookie[0];
-        return Arrays.stream(cookies)
-                .filter(c -> "username".equals(c.getName()))
-                //convertimos la cookie a tipo string
-                .map(Cookie::getValue)
-                .findAny();
+    //Implementación del metodo de la interfaz.
+    // Recibe la petición HTTP para extraer la sesión/atributos
+    public Optional<String> getUsername(HttpServletRequest request) {
+        //request.getSession() devuelve la sesión actual o crea una nueva si no existe
+        HttpSession session = request.getSession();
+        //recupera el atribbuto llamado username almacenado en la sesion y lo castea a String
+        String username = (String) session.getAttribute("username");
+
+        if (username != null) {// si el username tiene un valor
+            return Optional.of(username); //retornamos un Optional que lo contiene (con un valor dentro)
+        }
+        return Optional.empty();//Si no había nada, devuelve un Optional vacío (sin null)
     }
 }

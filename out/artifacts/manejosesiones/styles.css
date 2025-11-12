@@ -1,0 +1,205 @@
+/* ==== ESTILOS GENERALES ==== */
+/* ==== ESTILO PARA EL MENSAJE DE BIENVENIDA ==== */
+.bienvenido {
+    font-size: 28px;
+    color: #3e6b52; /* verde bosque suave */
+    text-align: center;
+    margin-top: 40px;
+    font-weight: 400;
+    letter-spacing: 1px;
+}
+
+/* Fuente base y color de fondo */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f2f8f5; /* verde menta muy claro */
+    margin: 40px;
+}
+
+/* Título principal */
+h1 {
+    color: #3e6b52; /* verde bosque suave */
+    text-align: center;
+}
+
+/* ==== ENLACES GENERALES ==== */
+/* Contenedor centrado para los enlaces */
+.links {
+    margin-bottom: 20px;
+}
+
+/* Estilo base de los enlaces  */
+.links a {
+    margin: 0 10px;
+    color: #5fa47a; /* verde medio pastel */
+    text-decoration: none;
+    font-weight: bold;
+}
+
+/* Efecto hover  */
+.links a:hover {
+    text-decoration: underline;
+    color: #3b7a56; /* verde más oscuro */
+}
+
+/* ==== TEXTO DE ADMIN ==== */
+/* Destacar texto de administrador  */
+.admin {
+    color: #D1508E;
+    font-weight: bold;
+}
+
+/* ==== TABLAS ==== */
+/* Contenedor de tabla centrado */
+.tabla-container {
+    display: flex;
+    justify-content: center;
+}
+
+/* Fondo con bordes */
+table {
+    border-collapse: collapse;
+    width: 80%;
+    background: #ffffff;
+}
+
+/* Bordes y alineación centrada */
+th, td {
+    padding: 10px;
+    border: 1px solid #c8e0d1; /* borde verde pálido */
+    text-align: center;
+}
+
+/* Encabezado con fondo */
+th {
+    background-color: #8dcfb3; /* verde menta más fuerte */
+    color: white;
+}
+
+/* Filas pares con fondo */
+tr:nth-child(even) {
+    background-color: #e4f4eb; /* verde pastel muy suave */
+}
+
+/* ==== ESTILOS LOGIN ==== */
+/* Caja centrada  */
+.login-container {
+    width: 400px;
+    margin: 80px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 0 15px rgba(70, 130, 90, 0.2);
+    text-align: center;
+}
+
+/* Título del login  */
+.login-container h1 {
+    color: #4e9374;
+    margin-bottom: 25px;
+}
+
+/* Formulario con disposición vertical */
+.login-container form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Campos  */
+.login-container input[type="text"],
+.login-container input[type="password"] {
+    padding: 10px;
+    border: 1px solid #b8d9c4;
+    border-radius: 6px;
+}
+
+/* Botón principal */
+.login-container input[type="submit"] {
+    background: #6fbf97;
+    color: white;
+    font-weight: bold;
+    border: none;
+    padding: 10px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+/* Hover */
+.login-container input[type="submit"]:hover {
+    background: #549e78;
+}
+
+/* Mensaje de error */
+.login-container .error {
+    color: #b64b4b;
+    font-weight: bold;
+}
+
+/* ==== ESTILOS INDEX ==== */
+/* Contenedor centrado */
+.index-container {
+    text-align: center;
+    margin-top: 100px;
+}
+
+/* Texto descriptivo  */
+.index-container p {
+    color: #3e5f4c;
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+/* Botones de navegación */
+.index-container .links a {
+    display: inline-block;
+    margin: 10px;
+    padding: 12px 25px;
+    background: #7bcfa5;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: bold;
+    transition: background 0.3s ease;
+}
+
+/* Hover */
+.index-container .links a:hover {
+    background: #59a981;
+}
+
+/* ==== MENSAJES DEL SERVLET ==== */
+/* Contenedor de mensajes */
+.message-container {
+    width: 450px;
+    margin: 120px auto;
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 0 15px rgba(80, 120, 90, 0.2);
+    text-align: center;
+}
+
+/* Título del mensaje */
+.message-container h1 {
+    color: #4e9374;
+    margin-bottom: 20px;
+}
+
+/* Enlace con estilo de botón */
+.message-container a {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 10px 20px;
+    background: #7bcfa5;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: bold;
+    transition: background 0.3s ease;
+}
+
+/* Hover */
+.message-container a:hover {
+    background: #59a981;
+}
