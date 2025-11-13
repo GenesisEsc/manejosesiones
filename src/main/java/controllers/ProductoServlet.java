@@ -1,12 +1,10 @@
 package controllers;
-
-/**
- * autor: Génesis
- * fecha: 11/11/2025
- * descripción: servlet encargado de mostrar un listado de productos en formato HTML.
- * Si el usuario ha iniciado sesión, se muestra un mensaje de bienvenida
- * y también se revelan datos adicionales como el precio del producto.
- */
+/** * autor: Génesis
+ * * fecha: 11/11/2025
+ * * descripción: servlet encargado de mostrar un listado de productos
+ * en formato HTML. * Si el usuario ha iniciado sesión,
+ * se muestra un mensaje de bienvenida * y también se revelan datos adicionales
+ * como el precio del producto. */
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -24,96 +22,99 @@ import java.io.PrintWriter;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * @WebServlet define las rutas o URLs con las que este servlet responderá.
- * En este caso: "/productos.html" y "/productos".
- */
+/** * @WebServlet define las rutas o urls con las que este servlet responderá.
+ * * En este caso: "/productos.html" y "/productos". */
+
 @WebServlet({"/productos.html", "/productos"})
 public class ProductoServlet extends HttpServlet {
 
-    /**
-     * Metodo doGet: se ejecuta cuando el cliente realiza una petición GET (por ejemplo,
-     * al ingresar la URL en el navegador o hacer clic en un enlace).
-     */
+    /** * Metodo doGet: se ejecuta cuando el cliente realiza una petición GET (por ejemplo,
+     * * al ingresar la URL en el navegador o hacer clic en un enlace). */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
         // Se crea una instancia del servicio de productos
         // que maneja la obtención de la lista de productos disponibles.
         ProductoService service = new ProductoServiceImplement();
-        List<Producto> productos = service.listar(); // se obtiene la lista completa
+        List<Producto> productos = service.listar();
 
         // Se crea el servicio de autenticación de usuarios
         // para verificar si existe una sesión activa.
         LoginService auth = new LoginServiceSessionImplement();
         Optional<String> usernameOptional = auth.getUsername(req);
 
-        // Configuramos el tipo de contenido de la respuesta como HTML con codificación UTF-8
         resp.setContentType("text/html;charset=UTF-8");
 
-        // try-with-resources para asegurar que el PrintWriter se cierre automáticamente
         try (PrintWriter out = resp.getWriter()) {
-            // Inicia la estructura básica de la página HTML
             out.println("<!DOCTYPE html>");
-            out.println("<html>");
+            out.println("<html lang='es'>");
             out.println("<head>");
-            out.println("<meta charset=utf-8>");
+            out.println("<meta charset='UTF-8'>");
+            out.println("<meta name='viewport' content='width=device-width, initial-scale=1.0'>");
             out.println("<title>Listado de Productos</title>");
-            // Vincula el archivo CSS para los estilos
-            out.println("<link rel='stylesheet' href='" + req.getContextPath() + "/styles.css'>");
+            // Vincula para los estilos
+            out.println("<link href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css' rel='stylesheet'>");
+            out.println("<link href='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css' rel='stylesheet'>");
+
             out.println("</head>");
-            out.println("<body>");
+            out.println("<body class='bg-light'>");
 
-            // Título principal de la página
-            out.println("<h1>Listado de Productos</h1>");
-
+            out.println("<div class='container mt-5'>");
+            out.println("<div class='text-center mb-4'>");
+            out.println("<h1 class='display-5 fw-bold text-primary'>Listado de Productos</h1>");
             // Si hay un usuario autenticado, se muestra su nombre y un saludo
             if (usernameOptional.isPresent()) {
-                out.println("<h2 class='bienvenido'>Hola <span class='admin'>" + usernameOptional.get() + "</span> ¡Bienvenido!</h2>");
+                out.println("<h5 class='text-success mt-3'>Hola, <strong>" + usernameOptional.get() + "</strong> ¡Bienvenido!</h5>");
             }
+            out.println("</div>");
 
-            // Contenedor de la tabla para aplicar estilos CSS fácilmente
-            out.println("<div class='tabla-container'>");
-            out.println("<table>");
+            // Tabla con estilos Bootstrap
+            out.println("<div class='card shadow-lg border-0'>");
+            out.println("<div class='card-body'>");
+            out.println("<div class='table-responsive'>");
+            out.println("<table class='table table-striped table-hover align-middle'>");
+            out.println("<thead class='table-success'>");
             out.println("<tr>");
-            out.println("<th>ID</th>");
-            out.println("<th>NOMBRE</th>");
-            out.println("<th>TIPO</th>");
-
-            // Si el usuario está logueado, se muestra también la columna de precios
+            out.println("<th scope='col'>ID</th>");
+            out.println("<th scope='col'>Nombre</th>");
+            out.println("<th scope='col'>Tipo</th>");
+            // Si el usuario está logueado, se muestra también la columna de precios y la de accion
             if (usernameOptional.isPresent()) {
-                out.println("<th>PRECIO</th>");
+                out.println("<th scope='col'>Precio</th>");
+                out.println("<th scope='col'>Opciones</th>");
             }
             out.println("</tr>");
+            out.println("</thead>");
+            out.println("<tbody>");
 
             // Recorremos la lista de productos obtenidos del servicio
             // y generamos una fila HTML por cada producto
             productos.forEach(p -> {
                 out.println("<tr>");
-                out.print("<td>" + p.getIdProducto() + "</td>");
-                out.print("<td>" + p.getNombre() + "</td>");
-                out.print("<td>" + p.getTipo() + "</td>");
-
-                // Solo los usuarios con sesión activa pueden ver los precios
+                out.println("<td>" + p.getIdProducto() + "</td>");
+                out.println("<td>" + p.getNombre() + "</td>");
+                out.println("<td>" + p.getTipo() + "</td>");
+                // Solo los usuarios con sesión activa pueden ver los precios y la accion agregar al carrito
                 if (usernameOptional.isPresent()) {
-                    out.println("<td>" + p.getPrecio() + "</td>");
-                    out.println("<td><a href=\""
-                            //el error venía del signo de pregunta extra dentro del href
-                            +req.getContextPath()
-                            +"/agregar-carro?id="
-                            +p.getIdProducto()
-                            +"\">Agregar Producto al carro</a></td>");
+                    out.println("<td>$" + p.getPrecio() + "</td>");
+                    out.println("<td>");
+                    out.println("<a href='" + req.getContextPath() + "/agregar-carro?id=" + p.getIdProducto() + "' class='btn btn-sm btn-outline-primary'>");
+                    out.println("<i class='bi bi-cart-plus'></i> Agregar al carro");
+                    out.println("</a>");
+                    out.println("</td>");
                 }
                 out.println("</tr>");
             });
 
-            // Cierre de la tabla y el contenedor
+            out.println("</tbody>");
             out.println("</table>");
             out.println("</div>");
+            out.println("</div>");
+            out.println("</div>");
 
-            // Cierre del cuerpo y del documento HTML
+            out.println("</div>");
             out.println("</body>");
             out.println("</html>");
         }
     }
 }
+
