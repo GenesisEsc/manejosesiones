@@ -1,5 +1,8 @@
 package models;
-
+/** * autor: Génesis
+ * * fecha: 11/11/2025
+ * * descripción: este modelo representa un producto dentro del carrito que
+ * guarda dos parametrosm producto y cantidad*/
 import java.util.Objects;
 
 public class ItemCarro {

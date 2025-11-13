@@ -1,4 +1,8 @@
 package models;
+/** * autor: Génesis
+ * * fecha: 11/11/2025
+ * * descripción: representa el carrito de compras completo, guarda una lista de todos
+ * los items agregados*/
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +13,9 @@ public class DetalleCarro {
 
     public DetalleCarro() {this.items = new ArrayList<>();}
 
-    /*Implementamos un metodo para agregar un producto al carro*/
+    /**Implementamos un metodo para agregar un producto al carro
+     * si el producto ya está en el carrito no lo duplica si no que aumenta la cantidad
+     * si no está, lo agrega como nuevo*/
     public void addItemCarro(ItemCarro itemCarro) {
         if(items.contains(itemCarro)) {
             Optional<ItemCarro> optionalItemCarro = items.stream()
@@ -24,8 +30,14 @@ public class DetalleCarro {
         }
     }
 
+    /**
+     * Metodo que retorna la lista de productos del carrito
+     */
     public List<ItemCarro> getItem() {return items;}
 
+    /**
+     * Metodo que suma los subtotales de los items, calcula el total general del carrito
+     */
     public double getTotal() { return items.stream().mapToDouble(ItemCarro::getSubtotal).sum();}
 
 
