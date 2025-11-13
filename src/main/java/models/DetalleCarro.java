@@ -35,12 +35,26 @@ public class DetalleCarro {
      */
     public List<ItemCarro> getItem() {return items;}
 
+
     /**
-     * Metodo que suma los subtotales de los items, calcula el total general del carrito
+     * metodo que calcula el subtotal sin iva
      */
-    public double getTotal() { return items.stream().mapToDouble(ItemCarro::getSubtotal).sum();}
+    public double getSubtotal() {
+        return items.stream().mapToDouble(ItemCarro::getSubtotal).sum();
+    }
 
+    /**
+     * metodo que calcula el iva del subtotal
+     */
+    public double getTotalIva() {
+        return getSubtotal() * 0.15;
+    }
 
-
+    /**
+     * metodo que calcula el total con iva ya incluido
+     */
+    public double getTotal() {
+        return getSubtotal() + getTotalIva();
+    }
 
 }
