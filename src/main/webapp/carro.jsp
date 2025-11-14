@@ -3,6 +3,9 @@
   User: Usuario
   Date: 13/11/2025
   Time: 8:26
+  Descripción: Vista encargada de mostrar el contenido del carrito de compras.
+  Aquí se renderizan los productos almacenados en sesión, permitiendo
+  visualizar subtotal, IVA y total final.
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" import="models.*" %>
@@ -71,6 +74,9 @@
     <%}%>
 
     <div class="mt-4">
+        <a href="<%=request.getContextPath()%>/carro/pdf" class="btn btn-success">
+            <i class="bi bi-file-pdf"></i> Descargar Factura PDF
+        </a>
         <a href="<%=request.getContextPath()%>/productos" class="btn btn-primary">
             <i class="bi bi-cart-plus"></i> Seguir Comprando
         </a>

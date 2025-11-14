@@ -71,6 +71,9 @@
     <%}%>
 
     <div class="mt-4">
+        <a href="<%=request.getContextPath()%>/carro/pdf" class="btn btn-success">
+            <i class="bi bi-file-pdf"></i> Descargar Factura PDF
+        </a>
         <a href="<%=request.getContextPath()%>/productos" class="btn btn-primary">
             <i class="bi bi-cart-plus"></i> Seguir Comprando
         </a>
