@@ -3,6 +3,9 @@
   User: Usuario
   Date: 13/11/2025
   Time: 8:26
+  Descripción: Vista encargada de mostrar el contenido del carrito de compras.
+  Aquí se renderizan los productos almacenados en sesión, permitiendo
+  visualizar subtotal, IVA y total final.
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" import="models.*" %>
