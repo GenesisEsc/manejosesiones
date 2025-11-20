@@ -1,11 +1,10 @@
 package util;
 
 import java.sql.Connection;
-import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class ConexionBDD {
+public class Conexion {
     private static String url = "jdbc:mysql://localhost:3306/sistemaventas?serverTimezone=UTC";
     private static String username = "root";
     private static String password = "Mysql123";
@@ -15,7 +14,7 @@ public class ConexionBDD {
     }
     //metodo de prueba
     public static void main (String [] args) {
-        try(Connection conn = ConexionBDD.getConnection()){
+        try(Connection conn = Conexion.getConnection()){
             if(conn != null) {
                 System.out.println("Conexión exitosa a la base de datos");
             }

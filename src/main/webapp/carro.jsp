@@ -1,17 +1,6 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: Usuario
-  Date: 13/11/2025
-  Time: 8:26
-  Descripción: Vista encargada de mostrar el contenido del carrito de compras.
-  Aquí se renderizan los productos almacenados en sesión, permitiendo
-  visualizar subtotal, IVA y total final.
-  To change this template use File | Settings | File Templates.
---%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" import="models.*" %>
 <%@ page import="models.DetalleCarro" %>
 <%@ page import="models.ItemCarro" %>
-<%--    Traemos la sesión Scriplets--%>
 <%
     DetalleCarro detalleCarro = (DetalleCarro) session.getAttribute("carro");
 %>
@@ -21,6 +10,81 @@
     <title>Carro de compras</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #b5eaea, #f7d1e3, #c7ffd8);
+            background-size: 300% 300%;
+            animation: gradientMove 10s ease infinite;
+            min-height: 100vh;
+            margin: 0;
+            padding-top: 40px;
+            font-family: "Segoe UI", sans-serif;
+        }
+
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        h1 {
+            color: #ff4fa3;
+            font-weight: bold;
+            text-shadow: 0 0 8px rgba(255, 79, 163, 0.4);
+        }
+
+        .table-success {
+            background-color: #a8e6cf !important;
+        }
+
+        .table-light {
+            background-color: #ffd3e2 !important;
+        }
+
+        .alert-info {
+            background-color: #bde0fe;
+            color: #000;
+            border: none;
+            font-weight: 600;
+        }
+
+        .btn-success {
+            background-color: #caffbf !important;
+            border: none;
+            color: #000;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background-color: #ffd3e2 !important;
+            border: none;
+            color: #000;
+            font-weight: 600;
+        }
+
+        .btn-secondary {
+            background-color: #bde0fe !important;
+            border: none;
+            color: #000;
+            font-weight: 600;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            transition: 0.2s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.25);
+            padding: 35px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+    </style>
+
 </head>
 
 <body>
@@ -48,8 +112,8 @@
         <%
             for (ItemCarro item: detalleCarro.getItem()) {%>
         <tr>
-            <td><%=item.getProducto().getIdProducto()%></td>
-            <td><%=item.getProducto().getNombre()%></td>
+            <td><%=item.getProducto().getId()%></td>
+            <td><%=item.getProducto().getNombreProducto()%></td>
             <td>$<%=item.getProducto().getPrecio()%></td>
             <td><%=item.getCantidad()%></td>
             <td>$<%=item.getSubtotal()%></td>
@@ -73,7 +137,7 @@
     </table>
     <%}%>
 
-    <div class="mt-4">
+    <div class="mt-4 d-flex gap-3">
         <a href="<%=request.getContextPath()%>/carro/pdf" class="btn btn-success">
             <i class="bi bi-file-pdf"></i> Descargar Factura PDF
         </a>
@@ -87,3 +151,4 @@
 </div>
 </body>
 </html>
+

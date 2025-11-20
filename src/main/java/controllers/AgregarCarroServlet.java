@@ -14,8 +14,10 @@ import models.ItemCarro;
 import models.Producto;
 import services.ProductoService;
 import services.ProductoServiceImplement;
+import services.ProductoServiceJdbcImpl;
 
 import java.io.IOException;
+import java.sql.Connection;
 import java.util.Optional;
 
 @WebServlet("/agregar-carro")
@@ -25,8 +27,12 @@ public class AgregarCarroServlet extends HttpServlet {
         //obtenemos el id del producto
         Long id = Long.parseLong(req.getParameter("id"));
 
+        //traemos la conexion
+        Connection conn = (Connection)req.getAttribute("conn");
+
         //busca el producto por id
-        ProductoService service = new ProductoServiceImplement();
+        //ProductoService service = new ProductoServiceImplement();
+        ProductoService service = new ProductoServiceJdbcImpl(conn);
         Optional<Producto> producto = service.porId(id);
 
         //si el producto existe crea un nuevo item carro con cantidad  1
