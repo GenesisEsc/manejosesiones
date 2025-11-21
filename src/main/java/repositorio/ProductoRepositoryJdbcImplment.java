@@ -49,27 +49,35 @@ public class ProductoRepositoryJdbcImplment implements Repository<Producto>{
     @Override
     public void guardar(Producto producto) throws SQLException {
         String sql;
-        if(producto.getId() !=null && producto.getId() > 0) {
-            sql = "update producto set nombreCategoria=?, idCategoria=?, cantidad=?, precio=?, descripcion=?, codigo=? " +
-                    " fecha_elaboracion=?, fecha_caducidad=? where id=?";
-        }else{
-            sql="insert into producto (nombreCategoria, idCategoria, cantidad, precio, descripcion, codigo, fecha_elaboracion, fecha_caducidad, condicion) " +
-                    " values (?,?,?,?,?,?,?,?,1)";
-        }
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, producto.getNombreProducto());
-            stmt.setInt(2, producto.getCantidad());
-            stmt.setDouble(3, producto.getPrecio());
-            stmt.setString(4, producto.getDescripcion());
-            stmt.setString(5, producto.getCodigo());
-            stmt.setLong(6, producto.getCategoria().getId());
 
-            if(producto.getId()!=null && producto.getId()>0) {
-                stmt.setLong(7, producto.getId());
-            } else {
-                stmt.setDate(8, Date.valueOf(producto.getFechaElaboracion()));
-                stmt.setDate(9, Date.valueOf(producto.getFechaCaducidad()));
+        // Definimos la SQL dependiendo de si es Editar o Crear
+        if (producto.getId() != null && producto.getId() > 0) {
+            // UPDATE: Nótese que arreglé la falta de coma y el orden
+            sql = "UPDATE producto SET nombreProducto=?, idCategoria=?, cantidad=?, precio=?, descripcion=?, fecha_elaboracion=?, fecha_caducidad=? WHERE id=?";
+        } else {
+            // INSERT: Quitamos 'codigo' porque no viene del formulario
+            sql = "INSERT INTO producto (nombreProducto, idCategoria, cantidad, precio, descripcion, fecha_elaboracion, fecha_caducidad, condicion) " +
+                    " VALUES (?,?,?,?,?,?,?,1)";
+        }
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            // Usamos una variable indice para no perdernos con los números
+            int i = 1;
+
+            // Seteamos los valores comunes en el MISMO ORDEN que aparecen en la SQL de arriba
+            stmt.setString(i++, producto.getNombreProducto());  // 1
+            stmt.setLong(i++, producto.getCategoria().getId()); // 2
+            stmt.setInt(i++, producto.getCantidad());           // 3
+            stmt.setDouble(i++, producto.getPrecio());          // 4
+            stmt.setString(i++, producto.getDescripcion());     // 5
+            stmt.setDate(i++, Date.valueOf(producto.getFechaElaboracion())); // 6
+            stmt.setDate(i++, Date.valueOf(producto.getFechaCaducidad()));   // 7
+
+            // Si es UPDATE, necesitamos setear el ID al final (para el WHERE id=?)
+            if (producto.getId() != null && producto.getId() > 0) {
+                stmt.setLong(i++, producto.getId()); // 8
             }
+
             stmt.executeUpdate();
         }
     }

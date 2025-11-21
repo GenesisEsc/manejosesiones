@@ -38,7 +38,7 @@ public class ProductoServlet extends HttpServlet {
         LoginService auth = new LoginServiceSessionImplement();
         Optional<String> usernameOptional = auth.getUsername(req);
 
-        resp.setContentType("text/html;charset=UTF-8");
+        /*resp.setContentType("text/html;charset=UTF-8");
 
         try (PrintWriter out = resp.getWriter()) {
             out.println("<!DOCTYPE html>");
@@ -48,7 +48,7 @@ public class ProductoServlet extends HttpServlet {
             out.println("<meta name='viewport' content='width=device-width, initial-scale=1.0'>");
             out.println("<title>Listado de Productos</title>");
 
-            // BOOTSTRAP
+
             out.println("<link href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css' rel='stylesheet'>");
             out.println("<link href='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css' rel='stylesheet'>");
 
@@ -139,7 +139,12 @@ public class ProductoServlet extends HttpServlet {
             out.println("</div>");
             out.println("</body>");
             out.println("</html>");
-        }
+        }*/
+        //seteamos los atributos de productos y username para pasar al jsp
+        req.setAttribute("productos", productos);
+        req.setAttribute("username", usernameOptional);
+        //pasamos el servlet
+        getServletContext().getRequestDispatcher("/producto.jsp").forward(req, resp);
     }
 }
 
