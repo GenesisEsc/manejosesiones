@@ -2,9 +2,17 @@
 <%@ page import="models.Producto" %>
 <%@ page import="models.Categoria" %>
 <%@ page import="java.util.List" %>
+<%@ page import="java.util.HashMap" %>
+<%@ page import="java.util.Map" %>
 <%
     Producto producto = (Producto) request.getAttribute("producto");
     List<Categoria> categorias = (List<Categoria>) request.getAttribute("categorias");
+    // Recuperamos el mapa de errores. Si es null (primera carga), creamos uno vacío para evitar NullPointerException
+    Map<String, String> errores = (Map<String, String>) request.getAttribute("errores");
+    if(errores == null) {
+        errores = new HashMap<>();
+    }
+
     String titulo = (producto.getId() != null && producto.getId() > 0) ? "Editar Producto" : "Crear Producto";
 %>
 <html>
@@ -107,32 +115,57 @@
     <h1><i class="bi bi-box-seam-fill"></i> <%= titulo %></h1>
 
     <form action="<%= request.getContextPath() %>/productos/form" method="post">
-        <input type="hidden" name="id" value="<%= (producto.getId() != null) ? producto.getId() : "" %>">
 
+        <!-- CAMPO NOMBRE -->
         <div class="mb-3">
             <label class="form-label">Nombre del Producto:</label>
-            <input type="text" class="form-control" name="nombre"
+            <input type="text"
+                   class="form-control <%= errores.containsKey("nombre") ? "is-invalid" : "" %>"
+                   name="nombre"
                    value="<%= (producto.getNombreProducto() != null) ? producto.getNombreProducto() : "" %>"
-                   placeholder="Ej: Galletas de Chocolate" required>
+                   placeholder="Ej: Papitas Picantes">
+            <% if(errores.containsKey("nombre")) { %>
+            <div class="invalid-feedback">
+                <%= errores.get("nombre") %>
+            </div>
+            <% } %>
         </div>
 
         <div class="row">
+            <!-- CAMPO PRECIO -->
             <div class="col-md-6 mb-3">
                 <label class="form-label">Precio ($):</label>
-                <input type="number" step="0.01" class="form-control" name="precio"
-                       value="<%= producto.getPrecio() > 0 ? producto.getPrecio() : "" %>"
-                       placeholder="0.00" required>
+                <input type="text"
+                       class="form-control <%= errores.containsKey("precio") ? "is-invalid" : "" %>"
+                       name="precio"
+                       value="<%= (producto.getPrecio() > 0) ? producto.getPrecio() : "" %>"
+                       placeholder="0.00">
+                <% if(errores.containsKey("precio")) { %>
+                <div class="invalid-feedback">
+                    <%= errores.get("precio") %>
+                </div>
+                <% } %>
             </div>
+
+            <!-- CAMPO STOCK -->
             <div class="col-md-6 mb-3">
                 <label class="form-label">Stock (Unidades):</label>
-                <input type="number" class="form-control" name="stock"
-                       value="<%= producto.getCantidad() %>" required>
+                <input type="number"
+                       class="form-control <%= errores.containsKey("stock") ? "is-invalid" : "" %>"
+                       name="stock"
+                       value="<%= producto.getCantidad() %>">
+                <% if(errores.containsKey("stock")) { %>
+                <div class="invalid-feedback">
+                    <%= errores.get("stock") %>
+                </div>
+                <% } %>
             </div>
         </div>
 
+        <!-- CAMPO CATEGORIA -->
         <div class="mb-3">
             <label class="form-label">Categoría:</label>
-            <select name="categoria" class="form-select" required>
+            <select name="categoria" class="form-select <%= errores.containsKey("categoria") ? "is-invalid" : "" %>">
                 <option value="">-- Seleccionar Categoría --</option>
                 <% for(Categoria c : categorias) { %>
                 <option value="<%= c.getId() %>"
@@ -141,23 +174,46 @@
                 </option>
                 <% } %>
             </select>
+            <% if(errores.containsKey("categoria")) { %>
+            <div class="invalid-feedback">
+                <%= errores.get("categoria") %>
+            </div>
+            <% } %>
         </div>
 
+        <!-- CAMPO DESCRIPCION (Opcional, sin validación obligatoria en el servlet, pero se mantiene estructura) -->
         <div class="mb-3">
             <label class="form-label">Descripción:</label>
             <textarea class="form-control" name="descripcion" rows="2" placeholder="Detalles del producto..."><%= (producto.getDescripcion() != null) ? producto.getDescripcion() : "" %></textarea>
         </div>
 
         <div class="row">
+            <!-- CAMPO FECHA ELABORACION -->
             <div class="col-md-6 mb-3">
                 <label class="form-label">Fecha Elaboración:</label>
-                <input type="date" class="form-control" name="fecha_elaboracion"
-                       value="<%= producto.getFechaElaboracion() %>" required>
+                <input type="date"
+                       class="form-control <%= errores.containsKey("fecha_elaboracion") ? "is-invalid" : "" %>"
+                       name="fecha_elaboracion"
+                       value="<%= producto.getFechaElaboracion() != null ? producto.getFechaElaboracion() : "" %>">
+                <% if(errores.containsKey("fecha_elaboracion")) { %>
+                <div class="invalid-feedback">
+                    <%= errores.get("fecha_elaboracion") %>
+                </div>
+                <% } %>
             </div>
+
+            <!-- CAMPO FECHA CADUCIDAD -->
             <div class="col-md-6 mb-3">
                 <label class="form-label">Fecha Caducidad:</label>
-                <input type="date" class="form-control" name="fecha_caducidad"
-                       value="<%= producto.getFechaCaducidad() %>" required>
+                <input type="date"
+                       class="form-control <%= errores.containsKey("fecha_caducidad") ? "is-invalid" : "" %>"
+                       name="fecha_caducidad"
+                       value="<%= producto.getFechaCaducidad() != null ? producto.getFechaCaducidad() : "" %>">
+                <% if(errores.containsKey("fecha_caducidad")) { %>
+                <div class="invalid-feedback">
+                    <%= errores.get("fecha_caducidad") %>
+                </div>
+                <% } %>
             </div>
         </div>
 
@@ -170,6 +226,7 @@
             </a>
         </div>
     </form>
+
 </div>
 
 </body>

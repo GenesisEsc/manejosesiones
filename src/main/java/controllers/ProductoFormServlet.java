@@ -1,129 +1,178 @@
 package controllers;
+/**
+ * autores; dilan, genesis. christian
+ */
 
-// Importaciones estándar de Servlets (Jakarta EE)
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-// Importaciones de Modelos y Servicio
 import models.Categoria;
 import models.Producto;
 import services.ProductoService;
 import services.ProductoServiceJdbcImpl;
 
-// Importaciones de Java para manejo de I/O, SQL, fechas y Optional
 import java.io.IOException;
 import java.sql.Connection;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
-/**
- * ProductoFormServlet es un controlador encargado de dos tareas principales:
- * 1. Mostrar el formulario HTML (GET).
- * 2. Procesar y guardar los datos enviados desde ese formulario (POST).
- */
-// La anotación WebServlet define la ruta (URL) que mapea a este controlador.
-// Esta ruta específica (/productos/form) se usa para crear o editar un producto.
 @WebServlet("/productos/form")
 public class ProductoFormServlet extends HttpServlet {
 
-    /**
-     * Maneja las peticiones GET. Se usa para cargar la página del formulario.
-     * Si se recibe un 'id', carga los datos del producto para edición; si no, prepara un formulario vacío para creación.
-     */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
-        // Obtengo la conexión activa a la base de datos (generalmente inyectada por un filtro).
+        //obtenemos la conexion
         Connection conn = (Connection) req.getAttribute("conn");
-        // Inicializo la capa de servicio, que maneja la lógica de negocio y persistencia.
         ProductoService service = new ProductoServiceJdbcImpl(conn);
 
-        // 1. Lógica para determinar si es EDICIÓN o CREACIÓN.
         Long id;
         try {
-            // Intento obtener el ID desde los parámetros de la URL (ej: /productos/form?id=5)
             id = Long.parseLong(req.getParameter("id"));
         } catch (NumberFormatException e) {
-            // Si el ID no existe o no es numérico, asumo que es una CREACIÓN.
             id = 0L;
         }
 
-        // Inicializo un objeto Producto, y su Categoría, para evitar NullPointerExceptions en el JSP.
         Producto producto = new Producto();
         producto.setCategoria(new Categoria());
 
-        // 2. Si el ID es válido (> 0), intento cargar el producto desde la base de datos.
         if (id > 0) {
             Optional<Producto> o = service.porId(id);
             if (o.isPresent()) {
-                // Si existe, cargo el objeto completo para rellenar el formulario (EDICIÓN).
                 producto = o.get();
             }
         }
 
-        // 3. Preparo los datos necesarios para la vista (JSP).
-        // La lista de categorías para el desplegable <select>.
         req.setAttribute("categorias", service.listarCategorias());
-        // El objeto producto a editar (si id > 0) o vacío (si es nuevo).
         req.setAttribute("producto", producto);
-
-        // 4. Redirecciono internamente (FORWARD) al JSP para mostrar el formulario HTML.
         getServletContext().getRequestDispatcher("/form.jsp").forward(req, resp);
     }
 
-    /**
-     * Maneja las peticiones POST. Se usa para procesar los datos enviados por el formulario HTML.
-     */
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
-        // Obtengo la conexión y el servicio, igual que en doGet.
+        // 1. Obtener conexión y servicio
         Connection conn = (Connection) req.getAttribute("conn");
         ProductoService service = new ProductoServiceJdbcImpl(conn);
 
-        // 1. Recolección y Parseo de Parámetros del Formulario.
+        // 2. Recibir parámetros como Strings puros primero
         String nombre = req.getParameter("nombre");
-        // Los números deben ser parseados, incluyendo manejo básico de errores NumberFormatException.
-        Double precio;
-        try { precio = Double.valueOf(req.getParameter("precio")); } catch (NumberFormatException e) { precio = 0.0; }
-        Integer stock;
-        try { stock = Integer.valueOf(req.getParameter("stock")); } catch (NumberFormatException e) { stock = 0; }
+        String precioParam = req.getParameter("precio");
+        String stockParam = req.getParameter("stock");
         String descripcion = req.getParameter("descripcion");
-        Long idCategoria = Long.valueOf(req.getParameter("categoria"));
+        String fechaElaboracionStr = req.getParameter("fecha_elaboracion");
+        String fechaCaducidadStr = req.getParameter("fecha_caducidad");
+        String categoriaIdStr = req.getParameter("categoria");
 
-        // Las fechas se parsean usando LocalDate (compatible con el formato yyyy-MM-dd de HTML Input type="date").
-        LocalDate fechaElab = LocalDate.parse(req.getParameter("fecha_elaboracion"));
-        LocalDate fechaCad = LocalDate.parse(req.getParameter("fecha_caducidad"));
+        // 3. Validaciones
+        Map<String, String> errores = new HashMap<>();
 
-        // Obtengo el ID oculto para saber si es una EDICIÓN (id > 0) o CREACIÓN (id = 0).
+        if (nombre == null || nombre.isBlank()) {
+            errores.put("nombre", "El nombre no puede estar vacío");
+        }
+
+        // Validación y parseo de Precio
+        Double precio = null;
+        if (precioParam == null || precioParam.isBlank()) {
+            errores.put("precio", "El precio no puede estar vacío");
+        } else {
+            try {
+                // Reemplazar coma por punto
+                precio = Double.valueOf(precioParam.trim().replace(",", "."));
+                if (precio <= 0) {
+                    errores.put("precio", "El precio debe ser mayor que 0");
+                }
+            } catch (NumberFormatException e) {
+                errores.put("precio", "El precio debe ser un número válido");
+            }
+        }
+
+        // Validación y parseo de Stock
+        Integer stock = 0;
+        try {
+            if(stockParam == null || stockParam.isBlank()) {
+                errores.put("stock", "El stock no puede estar vacío");
+            } else {
+                stock = Integer.valueOf(stockParam);
+            }
+        } catch (NumberFormatException e) {
+            errores.put("stock", "El stock debe ser un entero válido");
+        }
+
+        // Validación y parseo de Categoría
+        Long idCategoria = 0L;
+        try {
+            idCategoria = Long.parseLong(categoriaIdStr);
+            if (idCategoria.equals(0L)) {
+                errores.put("categoria", "La categoría es requerida");
+            }
+        } catch (NumberFormatException e) {
+            errores.put("categoria", "Formato de categoría inválido");
+        }
+
+        // Validación de Fechas
+        if (fechaElaboracionStr == null || fechaElaboracionStr.isBlank()) {
+            errores.put("fecha_elaboracion", "La fecha de elaboración es requerida");
+        }
+        if (fechaCaducidadStr == null || fechaCaducidadStr.isBlank()) {
+            errores.put("fecha_caducidad", "La fecha de caducidad es requerida");
+        }
+
+        LocalDate fechaElaboracion = null;
+        LocalDate fechaCaducidad = null;
+
+        try {
+            if(fechaElaboracionStr != null && !fechaElaboracionStr.isBlank())
+                fechaElaboracion = LocalDate.parse(fechaElaboracionStr, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+            if(fechaCaducidadStr != null && !fechaCaducidadStr.isBlank())
+                fechaCaducidad = LocalDate.parse(fechaCaducidadStr, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        } catch (DateTimeParseException e) {
+            // Si falla el parseo, asignamos null pero el error ya debería haber saltado arriba si estaba vacío
+            fechaElaboracion = null;
+            fechaCaducidad = null;
+        }
+
+        // Obtener ID del producto (hidden input)
         long id;
-        try { id = Long.parseLong(req.getParameter("id")); } catch (NumberFormatException e) { id = 0L; }
+        try {
+            id = Long.parseLong(req.getParameter("id"));
+        } catch (NumberFormatException e) {
+            id = 0L;
+        }
 
-        // 2. Creación y Mapeo del Objeto Producto.
+        // 4. Armar el objeto Producto con los datos capturados
         Producto producto = new Producto();
         producto.setId(id);
         producto.setNombreProducto(nombre);
         producto.setPrecio(precio);
         producto.setCantidad(stock);
         producto.setDescripcion(descripcion);
-        producto.setFechaElaboracion(fechaElab);
-        producto.setFechaCaducidad(fechaCad);
-        producto.setCondicion(1); // El producto creado o editado siempre se marca como Activo (1).
+        producto.setFechaElaboracion(fechaElaboracion);
+        producto.setFechaCaducidad(fechaCaducidad);
+        producto.setCondicion(1);
 
-        // Mapeo de la Categoría seleccionada. Solo necesitamos el ID para guardar.
         Categoria c = new Categoria();
         c.setId(idCategoria);
         producto.setCategoria(c);
 
-        // 3. Guardado en la Base de Datos.
-        // El servicio se encarga de llamar al Repositorio para ejecutar el INSERT o UPDATE.
-        service.guardar(producto);
+        // 5. Decisión Final: Guardar o Devolver errores
+        if (errores.isEmpty()) {
+            // no hay errores, guardamos y nos vamos
+            service.guardar(producto);
+            resp.sendRedirect(req.getContextPath() + "/productos");
+        } else {
+            // Camino Triste: Hay errores, volvemos al formulario
+            req.setAttribute("errores", errores);
+            req.setAttribute("categorias", service.listarCategorias());
+            req.setAttribute("producto", producto); // Devolvemos lo que el usuario escribió para no borrarle todo
 
-        // 4. Redirección.
-        // Después de guardar, redirijo al usuario al listado principal de productos para que vea el resultado.
-        // Uso sendRedirect para forzar una nueva petición GET y evitar problemas de doble submit.
-        resp.sendRedirect(req.getContextPath() + "/productos");
+            getServletContext().getRequestDispatcher("/form.jsp").forward(req, resp);
+        }
     }
 }
